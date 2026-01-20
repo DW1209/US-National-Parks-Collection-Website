@@ -8,6 +8,19 @@ function SidebarContent({ activePark, onClose, dense }) {
   const pad = dense ? 'px-6 py-6' : 'p-8';
   const imageH = dense ? 'h-52 sm:h-60' : 'h-64 md:h-72';
 
+  const formatEstablished = (raw) => {
+    if (!raw) return null;
+    if (String(raw).includes(",")) return String(raw);
+
+    const parts = String(raw).trim().split("-");
+    if (parts.length !== 3) return String(raw);
+
+    const [yyyy, mon, ddRaw] = parts;
+    const dd = String(ddRaw ?? "").padStart(2, "0");
+
+    return `${mon} ${dd}, ${yyyy}`;
+  };
+
   return (
     <div className="h-full flex flex-col overflow-hidden">
       {/* Top Image */}
@@ -41,6 +54,29 @@ function SidebarContent({ activePark, onClose, dense }) {
 
       {/* Content */}
       <div className={`${pad} flex-1 overflow-y-auto`}>
+        {/* Established + Order badges */}
+        <div className="mt-3 mb-7 flex flex-wrap items-center gap-2">
+          {activePark.established && (
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#2D5A27]/[0.06] px-3 py-1 border border-[#2D5A27]/20">
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8B5A2B]/70">
+                Established
+              </span>
+              <span className="text-xs font-semibold text-[#2D5A27] tabular-nums whitespace-nowrap">
+                {formatEstablished(activePark.established)}
+              </span>
+            </div>
+          )}
+
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#2D5A27]/[0.06] px-3 py-1 border border-[#2D5A27]/20">
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8B5A2B]/70">
+              Order
+            </span>
+            <span className="text-xs font-semibold text-[#2D5A27] tabular-nums whitespace-nowrap">
+              #{String(activePark.id).padStart(2, "0")}
+            </span>
+          </div>
+        </div>
+
         <h3 className="text-sm font-bold text-[#8B5A2B] uppercase tracking-widest mb-4">About the Park</h3>
         <p className="text-gray-600 leading-7 text-sm mb-7 font-medium">{activePark.desc}</p>
 
