@@ -18,18 +18,22 @@ export default function USMap({ parks, activePark, onParkClick }) {
   }, [parks, activePark?.id, hoveredParkId]);
 
   return (
-    <div className="relative w-full max-w-6xl px-2 sm:px-4 md:px-10 pt-16 md:pt-20 z-10">
+    <div className="relative w-full max-w-6xl px-2 sm:px-4 md:px-10 pt-16 md:pt-20 z-10 [@media(orientation:landscape)]:pt-4 [@media(orientation:landscape)]:pb-4">
       {/* Hovered state label */}
       {hoveredState && (
-        <div className="absolute left-1/2 -translate-x-1/2 top-3 md:top-4 z-20 pointer-events-none">
+        <div className="absolute left-1/2 -translate-x-1/2 top-0 -translate-y-5 md:-translate-y-5 z-20 pointer-events-none [@media(orientation:landscape)_and_(max-height:500px)]:fixed [@media(orientation:landscape)_and_(max-height:500px)]:top-[96px] [@media(orientation:landscape)_and_(max-height:500px)]:translate-y-0">
           <div className="bg-white/85 backdrop-blur-sm px-6 py-3 rounded-2xl shadow-lg border border-white/60">
-            <div className="text-[22px] sm:text-[28px] md:text-[40px] font-extrabold tracking-tight text-[#2D5A27] whitespace-nowrap">
+            <div className="text-[22px] sm:text-[28px] md:text-[40px] font-extrabold tracking-tight text-[#2D5A27] whitespace-nowrap [@media(orientation:landscape)_and_(max-height:500px)]:text-[18px]">
               {hoveredState.name}
             </div>
           </div>
         </div>
       )}
-      <svg viewBox="0 0 1000 589" className="w-auto h-auto drop-shadow-xl filter cursor-default">
+      <svg
+        viewBox="0 0 1000 589"
+        preserveAspectRatio="xMidYMid meet"
+        className="w-full h-auto drop-shadow-xl filter cursor-default [@media(orientation:landscape)]:max-h-[calc(100vh-96px)] [@media(orientation:landscape)]:mx-auto"
+      >
         {/* US States */}
         <g className="transition-opacity duration-500">
           {renderedStates.map((state, index) => {
