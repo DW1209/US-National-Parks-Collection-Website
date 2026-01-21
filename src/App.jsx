@@ -1,16 +1,62 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Header from './components/Header';
 import USMap from './components/USMap';
 import ParkSidebar from './components/ParkSidebar';
 import BackgroundPattern from './components/BackgroundPattern';
 import HintTooltip from './components/HintTooltip';
 import { parksData as baseParksData } from './data/parks';
+import { slugify } from "./utils/slug";
 
 export default function App() {
+  const parksData = useMemo(
+    () => baseParksData.map((p) => ({ ...p, slug: p.slug ?? slugify(p.name) })),
+    []
+  );
+  
   const [activePark, setActivePark] = useState(null);
-  const parksData = useMemo(() => baseParksData, []);
   const visitedCount = parksData.filter((p) => p.visited).length;
   const progress = Math.round((visitedCount / parksData.length) * 100);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const key = params.get("park");
+    if (!key) return;
+    const found = parksData.find(
+      (p) => p.slug === key || String(p.id) === key
+    );
+    if (found) setActivePark(found);
+  }, [parksData]);
+
+  useEffect(() => {
+    const syncFromUrl = () => {
+      const params = new URLSearchParams(window.location.search);
+      const key = params.get("park");
+      if (!key) {
+        setActivePark(null);
+        return;
+      }
+      const found = parksData.find(
+        (p) => p.slug === key || String(p.id) === key
+      );
+      setActivePark(found ?? null);
+    };
+    window.addEventListener("popstate", syncFromUrl);
+    return () => window.removeEventListener("popstate", syncFromUrl);
+  }, [parksData]);
+
+  const handleParkClick = (park) => {
+    setActivePark(park);
+    const url = new URL(window.location.href);
+    url.searchParams.set("park", park.slug ?? slugify(park.name));
+    window.history.pushState({}, "", url);
+  };
+  const handleClose = () => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("park");
+    window.history.pushState({}, "", url);
+    setActivePark(null);
+  };
+
   return (
     <div
       className="flex flex-col h-screen bg-[#F5F5DC] text-[#333] font-sans selection:bg-[#E67E22] selection:text-white"
@@ -30,11 +76,11 @@ export default function App() {
         {/* Left: Interactive Map */}
         <div className="relative flex-1 bg-[#E8F1F5] overflow-hidden flex items-center justify-center min-h-0">
           <BackgroundPattern />
-          <USMap parks={parksData} activePark={activePark} onParkClick={setActivePark} />
+          <USMap parks={parksData} activePark={activePark} onParkClick={handleParkClick} />
           {!activePark && <HintTooltip />}
         </div>
         {/* Right: Sidebar */}
-        <ParkSidebar activePark={activePark} onClose={() => setActivePark(null)} />
+        <ParkSidebar activePark={activePark} onClose={handleClose} />
       </main>
     </div>
   );
