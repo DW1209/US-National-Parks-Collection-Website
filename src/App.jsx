@@ -46,15 +46,19 @@ export default function App() {
   }, [parksData]);
 
   const handleParkClick = (park) => {
+    if (!park) return;
     setActivePark(park);
+    if (typeof window === "undefined") return;
     const url = new URL(window.location.href);
     url.searchParams.set("park", park.slug ?? slugify(park.name));
-    window.history.pushState({}, "", url);
+    window.history.pushState({}, "", url.pathname + url.search + url.hash);
   };
   const handleClose = () => {
-    const url = new URL(window.location.href);
-    url.searchParams.delete("park");
-    window.history.pushState({}, "", url);
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("park");
+      window.history.pushState({}, "", url.pathname + url.search + url.hash);
+    }
     setActivePark(null);
   };
 
@@ -77,7 +81,7 @@ export default function App() {
         {/* Left: Interactive Map */}
         <div className="relative flex-1 bg-[#E8F1F5] overflow-hidden flex items-center justify-center min-h-0">
           <BackgroundPattern />
-          <ParkListPanel parks={parksData} activePark={activePark} onSelectPark={setActivePark} />
+          <ParkListPanel parks={parksData} activePark={activePark} onSelectPark={handleParkClick} />
           <USMap parks={parksData} activePark={activePark} onParkClick={handleParkClick} />
           {!activePark && <HintTooltip />}
         </div>
