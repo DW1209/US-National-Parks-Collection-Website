@@ -4,6 +4,7 @@ import USMap from './components/USMap';
 import ParkSidebar from './components/ParkSidebar';
 import BackgroundPattern from './components/BackgroundPattern';
 import HintTooltip from './components/HintTooltip';
+import ParkListPanel from './components/ParkListPanel';
 import { parksData as baseParksData } from './data/parks';
 import { slugify } from "./utils/slug";
 
@@ -76,6 +77,7 @@ export default function App() {
         {/* Left: Interactive Map */}
         <div className="relative flex-1 bg-[#E8F1F5] overflow-hidden flex items-center justify-center min-h-0">
           <BackgroundPattern />
+          <ParkListPanel parks={parksData} activePark={activePark} onSelectPark={setActivePark} />
           <USMap parks={parksData} activePark={activePark} onParkClick={handleParkClick} />
           {!activePark && <HintTooltip />}
         </div>

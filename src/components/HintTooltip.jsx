@@ -1,8 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { Compass, X } from 'lucide-react';
 
+const STORAGE_KEY = "np_hint_open";   // 1 = open, 0 = closed
+const LOAD_KEY = "np_hint_load_id";   // per page-load id
+
 export default function HintTooltip() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(() => {
+    if (typeof window === "undefined") return true;
+
+    // A stable id that changes on full page load / refresh, but stays the same during component remounts
+    const navStart = (typeof performance !== "undefined" && (performance.timeOrigin || performance.timing?.navigationStart)) || null;
+    const currentLoadId = navStart ? String(navStart) : null;
+    const savedLoadId = window.sessionStorage.getItem(LOAD_KEY);
+
+    // New page visit / refresh: force open once
+    if (currentLoadId && savedLoadId !== currentLoadId) {
+      window.sessionStorage.setItem(LOAD_KEY, currentLoadId);
+      window.sessionStorage.setItem(STORAGE_KEY, "1");
+      return true;
+    }
+
+    // Otherwise, keep the user's last state in this page session
+    const saved = window.sessionStorage.getItem(STORAGE_KEY);
+    return saved == null ? true : saved === "1";
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.sessionStorage.setItem(STORAGE_KEY, open ? "1" : "0");
+  }, [open]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -33,7 +59,7 @@ export default function HintTooltip() {
             e.stopPropagation();
             setOpen(true);
           }}
-          className="fixed bottom-6 left-6 z-30 w-11 h-11 rounded-full bg-white/90 backdrop-blur-sm shadow-lg border border-white/60 flex items-center justify-center"
+          className="fixed bottom-6 left-6 z-30 w-11 h-11 rounded-full bg-white/90 backdrop-blur-sm shadow-lg border border-white/60 flex items-center justify-center [@media(max-height:500px)_and_(orientation:landscape)]:left-auto [@media(max-height:500px)_and_(orientation:landscape)]:right-6"
           aria-label="Open hint"
         >
           <Compass className="text-[#E67E22]" size={18} />
@@ -43,7 +69,7 @@ export default function HintTooltip() {
       {/* When open: show the original card + a close (X) button */}
       {open && (
         <div
-          className="fixed bottom-6 left-6 z-30 w-80 max-w-[85vw]"
+          className="fixed bottom-6 left-6 z-30 w-[340px] max-w-[86vw] [@media(max-height:500px)_and_(orientation:landscape)]:left-auto [@media(max-height:500px)_and_(orientation:landscape)]:right-6"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="relative bg-white/90 backdrop-blur-sm px-4 py-3 rounded-lg shadow-lg border-l-4 border-[#E67E22] animate-fade-in-up">
