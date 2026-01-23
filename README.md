@@ -1,8 +1,8 @@
-# US National Parks Collection Website
+# ParkMarks
 A modern, interactive React web app for tracking and exploring US national parks. This project visualizes national parks on an interactive map, lets you browse a searchable list, and opens detailed park cards.
 
 ## Website
-- https://dw1209.github.io/US-National-Parks-Collection-Website
+- https://dw1209.github.io/ParkMarks/
 
 ## Features
 - **Interactive US Map**
@@ -73,8 +73,8 @@ A modern, interactive React web app for tracking and exploring US national parks
 ### Installation
 1. Clone the repository:
 ```bash
-git clone https://github.com/DW1209/US-National-Parks-Collection-Website.git
-cd US-National-Parks-Collection-Website
+git clone https://github.com/DW1209/ParkMarks.git
+cd ParkMarks
 ```
 2. Install dependencies:
 ```bash
@@ -84,7 +84,7 @@ npm install
 ```bash
 npm run dev
 ```
-The application will be available at `http://localhost:5173/US-National-Parks-Collection-Website/`
+The application will be available at `http://localhost:5173/`
 
 ## Available Scripts
 - `npm run dev` - Start the development server with hot module replacement
